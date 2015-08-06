@@ -1,0 +1,12 @@
+{
+  "name": "embed_or_reference",
+  "version": "1.0.0",
+  "description": "Embedding and referencing",
+  "main": "main.js",
+  "scripts": {
+    "start": "nodemon main.js"
+  },
+  "keywords": [],
+  "author": "Stanley C Yang <stanley@stanleycyang.com> (http://www.stanleycyang.com)",
+  "license": "ISC"
+}
