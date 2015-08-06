@@ -18,6 +18,12 @@ We will have to embed our comments into blogs.
 Blog will reference the User
 Comment will reference the User
 
+###Getting started
+
+    $ mkdir embed_reference_demo && cd embed_reference_demo
+    $ npm init -f
+    $ npm install --save mongoose body-parser express mongoose morgan
+
 ###Blog Model
 
 ```
@@ -98,3 +104,79 @@ server.listen(port);
 console.log('Listening on port ' + port);
 
 ```
+
+###Routing
+
+```
+
+// Models
+var User = require('./models/User');
+var Comment = require('./models/Comment');
+var Blog = require('./models/Blog');
+
+router.get('/users', function(request, response, next){
+   User.find(function(error, users){
+      if(error) return response.send(error);
+      response.send(users);
+   });
+});
+
+router.post('/users', function(request, response, next){
+  var user = new User();
+  user.name = request.body.name;
+
+  user.save(function(error, user){
+    if(error) return response.send(error);
+    response.send(user);
+  });
+});
+
+router.get('/blogs', function(request, response, next){
+  Blog.find(function(error, blogs){
+    if(error) return response.send(error);
+    response.send(blogs);
+  });
+});
+
+router.post('/blogs', function(request, response, next){
+  var blog = new Blog();
+  blog.title = request.body.title;
+  blog.user = request.body.user;
+
+  blog.save(function(error, blog){
+    if(error) return response.send(error);
+    response.send(blog);
+  });
+});
+
+router.get('/blogs/:blog_id/comments', function(request, response, next){
+  Blog.findOne({_id: request.params.blog_id}, function(error, blog){
+    if(error) return response.send(error);
+    response.send(blog.comments);
+  });
+});
+
+router.get('/blogs/:blog_id/comments/:comment_id', function(request, response, next){
+  Blog.findOne({_id: request.params.blog_id}, function(error, blog){
+    if(error) return response.send(error);
+    response.send(blog.comments.id(request.params.comment_id));
+  });
+});
+
+router.post('/blogs/:blog_id/comments', function(request, response, next){
+  Blog.findOne({_id: request.params.blog_id}, function(error, blog){
+    blog.comments.push({content: request.body.content, user: request.body.user});
+    blog.save(function(error, blog){
+      if(error) return response.send(error);
+      response.send(blog);
+    });
+  });
+});
+
+app.use('/', router);
+
+```
+
+###Conclusion
+
+Our app can now reference user into the comments / blogs, and embed comments in the blogs.
