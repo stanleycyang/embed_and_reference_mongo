@@ -48,10 +48,16 @@ router.post('/users', function(request, response, next){
 });
 
 router.get('/blogs', function(request, response, next){
-  Blog.find(function(error, blogs){
-    if(error) return response.send(error);
-    response.send(blogs);
-  });
+    Blog.find()
+        .populate('comments.user')
+        .exec(function(error, blogs){
+            if(error) return response.send(error);
+            response.send(blogs);
+        });
+  /*Blog.find(function(error, blogs){*/
+    //if(error) return response.send(error);
+    //response.send(blogs);
+  /*});*/
 });
 
 router.post('/blogs', function(request, response, next){
@@ -66,10 +72,16 @@ router.post('/blogs', function(request, response, next){
 });
 
 router.get('/blogs/:id', function(request, response, next){
-  Blog.findOne({_id: request.params.id}, function(error, blog){
-    if(error) return response.send(error);
-    response.send(blog);
-  });
+    Blog.findOne({_id: request.params.id})
+        .populate('user')
+        .exec(function(error, blog){
+            if(error) return response.send(error);
+            response.send(blog);
+        });
+/*  Blog.findOne({_id: request.params.id}, function(error, blog){*/
+    //if(error) return response.send(error);
+    //response.send(blog);
+  /*});*/
 });
 
 router.put('/blogs/:id', function(request, response, next){
@@ -114,8 +126,8 @@ router.delete('/blogs/:blog_id/comments/:comment_id', function(request, response
   });
 });
 
-router.post('/comments', function(request, response, next){
-  Blog.findOne({_id: request.body.blog_id}, function(error, blog){
+router.post('/blogs/:blog_id/comments', function(request, response, next){
+  Blog.findOne({_id: request.params.blog_id}, function(error, blog){
     blog.comments.push({content: request.body.content, user: request.body.user});
     blog.save(function(error, blog){
       if(error) return response.send(error);
